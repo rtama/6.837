@@ -1,0 +1,74 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/fontstash.h
+ft2build.h
+-
+math.h
+-
+stb_truetype.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/stb_truetype.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/nanovg.c
+stdio.h
+-
+math.h
+-
+nanovg.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/nanovg.h
+fontstash.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/fontstash.h
+stb_image.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/stb_image.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/nanovg.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/stb_image.h
+stdio.h
+-
+math.h
+-
+string.h
+-
+stdio.h
+-
+stdlib.h
+-
+memory.h
+-
+assert.h
+-
+stdarg.h
+-
+stddef.h
+-
+stdint.h
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/stb_truetype.h
+stb_truetype.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/stb_truetype.h
+stdio.h
+-
+stb_truetype.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset2/starter2/3rd_party/nanogui/ext/nanovg/src/stb_truetype.h
+stdlib.h
+-
+math.h
+-
+math.h
+-
+stdlib.h
+-
+assert.h
+-
+string.h
+-
+memory.h
+-
+
