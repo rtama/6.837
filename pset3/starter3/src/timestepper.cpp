@@ -47,5 +47,37 @@ void Trapezoidal::takeStep(ParticleSystem* particleSystem, float stepSize)
 void RK4::takeStep(ParticleSystem* particleSystem, float stepSize)
 {
    //TODO: See handout 4.4
+    vector<Vector3f> state = particleSystem -> getState();
+    int size = state.size();
+    vector<Vector3f> deriv1 = particleSystem -> evalF(state);
+    vector<Vector3f> state2(state.size());
+
+    // calculate state using deriv1
+    for (int i=0; i < size; ++i) {
+        state2[i] = state[i] + stepSize/2.0*deriv1[i];
+    }
+    vector<Vector3f> deriv2 = particleSystem -> evalF(state2);
+    vector<Vector3f> state3(state.size());
+
+    // calculate state3 using deriv2
+    for (int i=0; i < size; ++i) {
+        state3[i] = state[i] + stepSize/2.0*deriv2[i];
+    }
+    vector<Vector3f> deriv3 = particleSystem -> evalF(state3);
+    vector<Vector3f> state4(state.size());
+
+    // calculate state4 using deriv3
+    for (int i=0; i < size; ++i) {
+        state4[i] = state[i] + stepSize*deriv3[i];
+    }
+    vector<Vector3f> deriv4 = particleSystem -> evalF(state4);
+    vector<Vector3f> RK4State(size);
+
+    // calculate next state for RK4 integrator
+    for (int i=0; i < size; ++i) {
+        RK4State[i] = state[i] + stepSize/6.0 * (deriv1[i] + 2.0*deriv2[i] + 2.0*deriv3[i] + deriv4[i]);
+    }
+
+    particleSystem -> setState(RK4State);
 }
 

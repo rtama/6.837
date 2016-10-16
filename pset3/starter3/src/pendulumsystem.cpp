@@ -9,12 +9,12 @@
 #include <string>
 
 // TODO adjust to number of particles.
-const int NUM_PARTICLES = 2;        // num_particles includes fixed point
+const int NUM_PARTICLES = 5;        // num_particles includes fixed point
 const float m = 5.0;
 const Vector3f g = Vector3f(0.0, -9.8, 0.0);
-const float k_vd = 10.0;
-const float k_s = 100.0;
-const float restLength = 0.1;
+const float k_vd = 7.0;
+const float k_s = 150.0;
+const float restLength = 0.05;
 
 
 PendulumSystem::PendulumSystem()
@@ -42,7 +42,7 @@ PendulumSystem::PendulumSystem()
 
         } else {
             // any other particles
-            float f = rand_uniform(-0.05f, 0.05f);
+            float f = rand_uniform(-0.1f, 0.1f);
             Vector3f pos = Vector3f(-0.5 + f, 1.0 + f, 0.0);
             Vector3f vel = Vector3f(0.0, 0.0, 0.0);
             start.push_back(pos);
@@ -93,7 +93,6 @@ std::vector<Vector3f> PendulumSystem::evalF(std::vector<Vector3f> state)
             Vector3f f = -k_s * (dir.abs() - restLength) * unitDir;
             F_s = F_s + f;
         }
-        std::cout << "F spring: " << F_s[1] << std::endl;
 
         // net force
         Vector3f F_all = F_g + F_vd + F_s;
@@ -121,4 +120,29 @@ void PendulumSystem::draw(GLProgram& gl)
         gl.updateModelMatrix(Matrix4f::translation(pos));
         drawSphere(0.075f, 10, 10);
     }
+}
+
+// draw spring connected to particle i
+void PendulumSystem::drawSprings(int particle_i, GLProgram& gl) {
+    // update material color and set up recorder
+    const Vector3f COLOR(0.9f, 0.9f, 0.9f);
+    gl.updateMaterial(COLOR);
+    gl.disableLighting();
+    gl.updateModelMatrix(Matrix4f::identity());
+    VertexRecorder rec;
+
+    // find distances for springs
+    Vector3f pos = getPosition(particle_i);
+    Spring spring = springs[particle_i];
+    std::vector<int> connected = spring.getConnectedParticles();
+    for (int i=0; i<connected.size(); ++i) {
+        Vector3f otherPos = getPosition(connected[i]);
+        Vector3f diff = otherPos - pos;
+
+        rec.record(pos, COLOR);
+        rec.record(pos + diff, COLOR);
+    }
+    rec.draw(GL_LINES);
+    gl.enableLighting(); // reset to default lighting model
+
 }
