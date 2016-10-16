@@ -14,6 +14,7 @@
 #include "simplesystem.h"
 #include "pendulumsystem.h"
 #include "clothsystem.h"
+#include "spring.h"
 
 using namespace std;
 

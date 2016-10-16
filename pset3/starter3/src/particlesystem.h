@@ -4,6 +4,7 @@
 #include <vector>
 #include <vecmath.h>
 #include <cstdint>
+#include "spring.h"
 
 
 // helper for uniform distribution
@@ -24,8 +25,18 @@ public:
     // setter method for the system's state
     void setState(const std::vector<Vector3f>  & newState) { m_vVecState = newState; };
 
+    // get position of particle i
+    Vector3f getPosition(int i) {return m_vVecState[i*2];};
+
+    // get velocity of particle i
+    Vector3f getVelocity(int i) {return m_vVecState[(i*2)+1];};
+
  protected:
     std::vector<Vector3f> m_vVecState;
+
+    // springs[i] = Spring object for particle i
+    std::vector<Spring> springs;
+
 };
 
 /* GLProgram is a helper for updating uniform variables.

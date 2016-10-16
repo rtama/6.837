@@ -14,7 +14,6 @@ void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
     // calculate new state using forward euler: dX = f(X,t) * dt
     for (int i=0; i < state.size(); ++i) {
         newState[i] = state[i] + (stepSize*derivative[i]);
-        Vector3f s = stepSize*derivative[i];
     }
     particleSystem -> setState(newState);
 }
