@@ -1,0 +1,11 @@
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/CMakeFiles/a3.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/3rd_party/glfw/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/3rd_party/glfw/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/3rd_party/glfw/src/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/3rd_party/glfw/src/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/3rd_party/glfw/src/CMakeFiles/glfw.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/vecmath/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/vecmath/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/build/vecmath/CMakeFiles/vecmath.dir

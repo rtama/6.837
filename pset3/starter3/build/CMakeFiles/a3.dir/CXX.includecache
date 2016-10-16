@@ -1,0 +1,254 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../3rd_party/glfw/include/GLFW/glfw3.h
+stddef.h
+-
+stdint.h
+-
+OpenGL/gl3.h
+-
+OpenGL/gl3ext.h
+-
+OpenGL/gl.h
+-
+OpenGL/glu.h
+-
+GL/glcorearb.h
+-
+GLES/gl.h
+-
+GLES/glext.h
+-
+GLES2/gl2.h
+-
+GLES2/gl2ext.h
+-
+GLES3/gl3.h
+-
+GLES2/gl2ext.h
+-
+GLES3/gl31.h
+-
+GLES2/gl2ext.h
+-
+vulkan/vulkan.h
+-
+GL/gl.h
+-
+GL/glext.h
+-
+GL/glu.h
+-
+
+../vecmath/include/Matrix2f.h
+cstdio
+-
+
+../vecmath/include/Matrix3f.h
+cstdio
+-
+
+../vecmath/include/Matrix4f.h
+cstdio
+-
+
+../vecmath/include/Quat4f.h
+Matrix3f.h
+../vecmath/include/Matrix3f.h
+
+../vecmath/include/Vector2f.h
+cmath
+-
+
+../vecmath/include/Vector3f.h
+
+../vecmath/include/Vector4f.h
+
+../vecmath/include/vecmath.h
+Matrix2f.h
+../vecmath/include/Matrix2f.h
+Matrix3f.h
+../vecmath/include/Matrix3f.h
+Matrix4f.h
+../vecmath/include/Matrix4f.h
+Quat4f.h
+../vecmath/include/Quat4f.h
+Vector2f.h
+../vecmath/include/Vector2f.h
+Vector3f.h
+../vecmath/include/Vector3f.h
+Vector4f.h
+../vecmath/include/Vector4f.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.cpp
+camera.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+iostream
+-
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+vecmath.h
+-
+cstdint
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/clothsystem.cpp
+clothsystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/clothsystem.h
+camera.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+vertexrecorder.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/clothsystem.h
+vector
+-
+particlesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+OpenGL/gl3.h
+-
+GL/glew.h
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/main.cpp
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+GLFW/glfw3.h
+-
+cmath
+-
+cstdlib
+-
+ctime
+-
+iostream
+-
+vector
+-
+vertexrecorder.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.h
+starter3_util.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/starter3_util.h
+camera.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+timestepper.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/timestepper.h
+simplesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/simplesystem.h
+pendulumsystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/pendulumsystem.h
+clothsystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/clothsystem.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.cpp
+particlesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.h
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+camera.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+random
+-
+cstdio
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.h
+vector
+-
+vecmath.h
+-
+cstdint
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/pendulumsystem.cpp
+pendulumsystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/pendulumsystem.h
+cassert
+-
+camera.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+vertexrecorder.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/pendulumsystem.h
+vector
+-
+particlesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/simplesystem.cpp
+simplesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/simplesystem.h
+camera.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/camera.h
+vertexrecorder.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/simplesystem.h
+vector
+-
+particlesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/starter3_util.cpp
+starter3_util.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/starter3_util.h
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+GLFW/glfw3.h
+-
+cstdio
+-
+cstring
+-
+cassert
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/starter3_util.h
+cstdint
+-
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/timestepper.cpp
+timestepper.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/timestepper.h
+cstdio
+-
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/timestepper.h
+vecmath.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vecmath.h
+vector
+-
+particlesystem.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/particlesystem.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.cpp
+vertexrecorder.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.h
+cassert
+-
+cstdint
+-
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/vertexrecorder.h
+vector
+-
+vecmath.h
+-
+gl.h
+/Users/reecetamashiro/Dropbox (MIT)/Classes/fall 2016/6.837/pset3/starter3/src/gl.h
+
