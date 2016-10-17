@@ -17,6 +17,10 @@ public:
     // draw is called once per frame
     void draw(GLProgram& ctx);
 
+    // index of particle at position, (i,j) for an nxn cloth
+    // 0 indexed, top left = (0,0)
+    int indexOf(int i, int j, int n);
+
     // inherits
     // std::vector<Vector3f> m_vVecState;
 };
