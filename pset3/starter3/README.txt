@@ -5,12 +5,12 @@ $ cd build
 $ cmake ..
 $ make
 
-The sample solution binaries are in sample_solution/
+Collaboration: None
 
-Submission
-==========
-We only provide official support for developing under the Athena cluster.
-Your submission has to build and run over there to receive credit.
+References: only online cplusplus.com, lecture notes, and piazza. 
 
-Please submit your entire source directory (excluding the build
-directory) and compiled binary in inst/.
+Problems: Not that I'm aware of.
+
+Extra Credit: No
+
+Comments: I really enjoyed it! 

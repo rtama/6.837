@@ -14,19 +14,28 @@ public:
     // get connected particles
     std::vector<int> getConnectedParticles() {return connectedParticles;};
 
+    // check if particle i already connected. true = already connected
+    bool checkParticle(int i);
+
     // set restlength
-    void setRestLength(float& restLength) {m_restLength = restLength;};
+    void setRestLength(float restLength) {m_restLength.push_back(restLength);};
+
+    // get restlength of connected particle i
+    float getRestLength(int i) {return m_restLength[i];};
 
     // set stiffness
-    void setStiffness(float& stiffness) {m_stiffness = stiffness;};
+    void setStiffness(float stiffness) {m_stiffness.push_back(stiffness);};
+
+    // get stiffness of connected particle i
+    float getStiffness(int i) {return m_stiffness[i];};
 
 private:
     // particles that this this particle is connected to
     std::vector<int> connectedParticles;
 
     // constants
-    float m_restLength;
-    float m_stiffness;
+    std::vector<float> m_restLength;
+    std::vector<float> m_stiffness;
 };
 
 #endif

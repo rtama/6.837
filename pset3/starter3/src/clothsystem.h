@@ -8,6 +8,16 @@
 class ClothSystem : public ParticleSystem
 {
     ///ADD MORE FUNCTION AND FIELDS HERE
+    // add structural springs for particle i (row, col)
+    void addStructuralSprings(Spring& spring, int row, int column, int i);
+
+    // add shear springs for particle i (row, col)
+    void addShearSprings(Spring& spring, int row, int column, int i);
+
+    // add flex springs for particle i (row, cole)
+    void addFlexSprings(Spring& spring, int row, int column, int i);
+
+
 public:
     ClothSystem();
 

@@ -3,28 +3,31 @@
 #include "vertexrecorder.h"
 
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
  // your system should at least contain 8x8 particles.
-//const int W = 8;
-//const int H = 8;
+const int N = 8;
 
 const bool showSprings = true;
-const int W = 3; // for testing
-const int H = 3;
-const float m = 5.0;
+const int W = N;
+const int H = N;
+const float m = .01;
 const Vector3f g = Vector3f(0.0, -9.8, 0.0);
-const float k_vd = 7.0;
-const float k_s = 150.0;
-const float restLength = 0.1;
+const float k_vd = .10;
+const float k_s = 10.0;
+const float restLength = 2.0/W;
 
 ClothSystem::ClothSystem()
 {
     // TODO 5. Initialize m_vVecState with cloth particles. 
     // You can again use rand_uniform(lo, hi) to make things a bit more interesting
 
+    // set springs size
     int totParticles = W * H;
+    springs.resize(totParticles);
+
     float wEach = 2.0f/W;
     float hEach = 2.0f/H;
     vector<Vector3f> start;
@@ -34,7 +37,9 @@ ClothSystem::ClothSystem()
     for (int i=0; i < totParticles; ++i) {
         int column = i % W;
         int row = i / H;
-        Vector3f toAdd = Vector3f(wEach * column, hEach * -row, 0.0);
+        float f = rand_uniform(-0.1f, 0.1f);
+
+        Vector3f toAdd = Vector3f(wEach * column, hEach * -row, f);
         Vector3f particle = topLeft + toAdd;
 
         // add pos and vel to start vector
@@ -42,30 +47,142 @@ ClothSystem::ClothSystem()
         start.push_back(Vector3f(0.0, 0.0, 0.0)); // velocity
 
         // structural springs
-        Spring spring = Spring();
-        if (column > 0) {
-            int index = indexOf(row, column-1, W);
-            spring.addParticle(index);
-        }
-        if (column < W-1) {
-            int index = indexOf(row, column+1, W);
-            spring.addParticle(index);
-        }
-        if (row > 0) {
-            int index = indexOf(row-1, column, W);
-            spring.addParticle(index);
-        }
-        if (row < H-1) {
-            int index = indexOf(row+1, column, W);
-            spring.addParticle(index);
-        }
-        springs.push_back(spring);
+        Spring structuralSpring = Spring();
+        addStructuralSprings(structuralSpring, row, column, i);
 
+        // shear springs
+        Spring shearSpring = Spring();
+        addShearSprings(shearSpring, row, column, i);
+
+        // flex springs
+        Spring flexSpring = Spring();
+        addFlexSprings(flexSpring, row, column, i);
 
     }
     setState(start);
 }
 
+void ClothSystem::addStructuralSprings(Spring& spring, int row, int column, int i) {
+    if (column > 0) {
+        int index = indexOf(row, column-1, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength);
+            springs[index].addParticle(i); // Make sure added particle also adds this particle
+            springs[index].setRestLength(restLength);
+        }
+    }
+    if (column < W-1) {
+        int index = indexOf(row, column+1, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength);
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength);
+        }
+    }
+    if (row > 0) {
+        int index = indexOf(row-1, column, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength);
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength);
+        }
+    }
+    if (row < H-1) {
+        int index = indexOf(row+1, column, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength);
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength);
+        }
+    }
+    springs.push_back(spring);
+}
+
+// add shear springs for particle i (row, col)
+void ClothSystem::addShearSprings(Spring& spring, int row, int column, int i) {
+    if (column > 0 && row > 0) {
+        int index = indexOf(row-1, column-1, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*sqrt(2.0)); // Added particle also adds this particle
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*sqrt(2.0));
+        }
+
+    }
+    if (column < W-1 && row > 0) {
+        int index = indexOf(row-1, column+1, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*sqrt(2.0));
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*sqrt(2.0));
+        }
+    }
+    if (column > 0 && row < H-1) {
+        int index = indexOf(row+1, column-1, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*sqrt(2.0));
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*sqrt(2.0));
+        }
+
+    }
+    if (column < W-1 && row < H-1) {
+        int index = indexOf(row+1, column+1, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*sqrt(2.0));
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*sqrt(2.0));
+        }
+    }
+}
+
+void ClothSystem::addFlexSprings(Spring& spring, int row, int column, int i) {
+    if (column > 1) {
+        int index = indexOf(row, column-2, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*2.0); // Added particle also adds this particle
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*2.0);
+        }
+    }
+    if (column < W-2) {
+        int index = indexOf(row, column+2, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*2.0);
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*2.0);
+        }
+    }
+    if (row < H-2) {
+        int index = indexOf(row+2, column, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*2.0);
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*2.0);
+        }
+
+    }
+    if (row > 1) {
+        int index = indexOf(row-2, column, N);
+        if (!spring.checkParticle(index)) {
+            spring.addParticle(index);
+            spring.setRestLength(restLength*2.0);
+            springs[index].addParticle(i);
+            springs[index].setRestLength(restLength*2.0);
+        }
+    }
+}
 
 std::vector<Vector3f> ClothSystem::evalF(std::vector<Vector3f> state)
 {
@@ -76,9 +193,45 @@ std::vector<Vector3f> ClothSystem::evalF(std::vector<Vector3f> state)
     // - structural springs
     // - shear springs
     // - flexion springs
+    // first fixed particle doesn't move
 
+    // iterate through number of particles
+    for (int i=1; i<(state.size()/2); ++i) {
+        Vector3f pos = state[2*i];
+        Vector3f vel = state[2*i+1];
 
-     
+        // Gravity
+        Vector3f F_g = m*g;
+
+        // Viscous Drag
+        Vector3f F_vd = -k_vd * vel;
+
+        // Springs
+        std::vector<int> particles = springs[i].getConnectedParticles();
+        Vector3f F_s = Vector3f(0.0, 0.0, 0.0);
+        for (int j = 0; j < particles.size(); ++j) {
+            float restL = springs[i].getRestLength(j);
+            Vector3f dir = pos - state[2*particles[j]];
+            Vector3f unitDir = dir.normalized();
+            Vector3f f = -k_s * (dir.abs() - restL) * unitDir;
+            F_s = F_s + f;
+        }
+
+        // net force
+        Vector3f F_all = F_g + F_vd + F_s;
+        Vector3f acceleration = F_all/m;
+
+        // position -> velocity ; velocity -> acceleration
+        if (i == 0 || i == W-1) {
+            f[2*i] = Vector3f(0.0, 0.0, 0.0);
+            f[2*i+1] = Vector3f(0.0, 0.0, 0.0);
+        } else {
+            f[2*i] = vel;
+            f[2*i+1] = acceleration;
+        }
+
+    }
+
     return f;
 }
 
@@ -102,7 +255,7 @@ void ClothSystem::draw(GLProgram& gl)
 
     for (int i=0; i<getState().size()/2; ++i) {
         gl.updateModelMatrix(Matrix4f::translation(getPosition(i)));
-        drawSphere(0.04f, 8, 8);
+//        drawSphere(0.04f, 8, 8);
     }
 
     // EXAMPLE for how to render cloth particles.

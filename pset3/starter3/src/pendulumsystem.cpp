@@ -10,11 +10,11 @@
 
 // TODO adjust to number of particles.
 const int NUM_PARTICLES = 5;        // num_particles includes fixed point
-const float m = 5.0;
+const float m = .05;
 const Vector3f g = Vector3f(0.0, -9.8, 0.0);
-const float k_vd = 7.0;
-const float k_s = 150.0;
-const float restLength = 0.05;
+const float k_vd = .02;
+const float k_s = 1.5;
+const float restLength = 0.01;
 
 
 PendulumSystem::PendulumSystem()
@@ -43,7 +43,7 @@ PendulumSystem::PendulumSystem()
         } else {
             // any other particles
             float f = rand_uniform(-0.1f, 0.1f);
-            Vector3f pos = Vector3f(-0.5 + f, 1.0 + f, 0.0);
+            Vector3f pos = Vector3f(-0.5 + f, 1.0 + f, f);
             Vector3f vel = Vector3f(0.0, 0.0, 0.0);
             start.push_back(pos);
             start.push_back(vel);
@@ -75,8 +75,8 @@ std::vector<Vector3f> PendulumSystem::evalF(std::vector<Vector3f> state)
 
     // iterate through number of particles
     for (int i=1; i<(state.size()/2); ++i) {
-        Vector3f pos = getPosition(i);
-        Vector3f vel = getVelocity(i);
+        Vector3f pos = state[2*i];
+        Vector3f vel = state[2*i+1];
 
         // Gravity
         Vector3f F_g = m*g;
@@ -88,7 +88,7 @@ std::vector<Vector3f> PendulumSystem::evalF(std::vector<Vector3f> state)
         std::vector<int> particles = springs[i].getConnectedParticles();
         Vector3f F_s = Vector3f(0.0, 0.0, 0.0);
         for (int j = 0; j < particles.size(); ++j) {
-            Vector3f dir = pos - getPosition(particles[j]);
+            Vector3f dir = pos - state[2*particles[j]];
             Vector3f unitDir = dir.normalized();
             Vector3f f = -k_s * (dir.abs() - restLength) * unitDir;
             F_s = F_s + f;
