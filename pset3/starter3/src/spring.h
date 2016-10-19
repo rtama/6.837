@@ -23,12 +23,6 @@ public:
     // get restlength of connected particle i
     float getRestLength(int i) {return m_restLength[i];};
 
-    // set stiffness
-    void setStiffness(float stiffness) {m_stiffness.push_back(stiffness);};
-
-    // get stiffness of connected particle i
-    float getStiffness(int i) {return m_stiffness[i];};
-
 private:
     // particles that this this particle is connected to
     std::vector<int> connectedParticles;

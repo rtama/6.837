@@ -31,6 +31,11 @@ public:
     // 0 indexed, top left = (0,0)
     int indexOf(int i, int j, int n);
 
+    // switch hold point of cloth to middle
+    void switchHold();
+
+    void switchWind();
+
     // inherits
     // std::vector<Vector3f> m_vVecState;
 };

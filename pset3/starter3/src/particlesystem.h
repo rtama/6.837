@@ -28,9 +28,6 @@ public:
     // get position of particle i
     Vector3f getPosition(int i) {return m_vVecState[i*2];};
 
-    // get velocity of particle i
-    Vector3f getVelocity(int i) {return m_vVecState[(i*2)+1];};
-
  protected:
     std::vector<Vector3f> m_vVecState;
 

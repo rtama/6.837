@@ -23,6 +23,8 @@ namespace
 
 // Declarations of functions whose implementations occur later.
 void initSystem();
+void switchHold();
+void switchWind();
 void stepSystem();
 void drawSystem();
 void freeSystem();
@@ -85,6 +87,21 @@ static void keyCallback(GLFWwindow* window, int key,
         freeSystem();
         initSystem();
         resetTime();
+        break;
+    }
+    case 'P':
+    {
+        cout << "Changing hold point\n";
+        freeSystem();
+        initSystem();
+        resetTime();
+        switchHold();
+        break;
+    }
+    case 'W':
+    {
+        cout << "Toggling wind\n";
+        switchWind();
         break;
     }
     default:
@@ -190,6 +207,14 @@ void initSystem()
     pendulumSystem = new PendulumSystem();
     // TODO customize initialization of cloth system
     clothSystem = new ClothSystem();
+}
+
+void switchHold() {
+    clothSystem -> switchHold();
+}
+
+void switchWind() {
+    clothSystem -> switchWind();
 }
 
 void freeSystem() {

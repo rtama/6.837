@@ -19,6 +19,10 @@ const float k_vd = .10;
 const float k_s = 10.0;
 const float restLength = 2.0/W;
 
+// Extra credit stuff
+bool switchHoldPoint=false;
+bool wind=false;
+
 ClothSystem::ClothSystem()
 {
     // TODO 5. Initialize m_vVecState with cloth particles. 
@@ -196,7 +200,7 @@ std::vector<Vector3f> ClothSystem::evalF(std::vector<Vector3f> state)
     // first fixed particle doesn't move
 
     // iterate through number of particles
-    for (int i=1; i<(state.size()/2); ++i) {
+    for (int i=0; i<(state.size()/2); ++i) {
         Vector3f pos = state[2*i];
         Vector3f vel = state[2*i+1];
 
@@ -217,17 +221,35 @@ std::vector<Vector3f> ClothSystem::evalF(std::vector<Vector3f> state)
             F_s = F_s + f;
         }
 
+        // wind force
+        Vector3f F_wind = Vector3f(0.0, 0.0, 0.0);
+
+        if (wind) {
+            float f = rand_uniform(-0.05f, 0.1f);
+            F_wind = Vector3f(0.0, 0.0, f);
+        }
+
         // net force
-        Vector3f F_all = F_g + F_vd + F_s;
+        Vector3f F_all = F_g + F_vd + F_s + F_wind;
         Vector3f acceleration = F_all/m;
 
         // position -> velocity ; velocity -> acceleration
-        if (i == 0 || i == W-1) {
-            f[2*i] = Vector3f(0.0, 0.0, 0.0);
-            f[2*i+1] = Vector3f(0.0, 0.0, 0.0);
+        if (switchHoldPoint) {
+            if (i == (W-1)/2) {
+                f[2*i] = Vector3f(0.0, 0.0, 0.0);
+                f[2*i+1] = Vector3f(0.0, 0.0, 0.0);
+            } else {
+                f[2 * i] = vel;
+                f[2 * i + 1] = acceleration;
+            }
         } else {
-            f[2*i] = vel;
-            f[2*i+1] = acceleration;
+            if (i == 0 || i == W-1) {
+                f[2*i] = Vector3f(0.0, 0.0, 0.0);
+                f[2*i+1] = Vector3f(0.0, 0.0, 0.0);
+            } else {
+                f[2*i] = vel;
+                f[2*i+1] = acceleration;
+            }
         }
 
     }
@@ -242,6 +264,22 @@ int ClothSystem::indexOf(int i, int j, int n) {
     return i * n + j;
 }
 
+void ClothSystem::switchHold() {
+    if (switchHoldPoint) {
+        switchHoldPoint = false;
+    } else {
+        switchHoldPoint = true;
+    }
+}
+
+void ClothSystem::switchWind() {
+    if (wind) {
+        wind = false;
+    } else {
+        wind = true;
+    }
+}
+
 
 void ClothSystem::draw(GLProgram& gl)
 {
@@ -253,10 +291,10 @@ void ClothSystem::draw(GLProgram& gl)
     const Vector3f CLOTH_COLOR(0.9f, 0.9f, 0.9f);
     gl.updateMaterial(CLOTH_COLOR);
 
-    for (int i=0; i<getState().size()/2; ++i) {
-        gl.updateModelMatrix(Matrix4f::translation(getPosition(i)));
+//    for (int i=0; i<getState().size()/2; ++i) {
+//        gl.updateModelMatrix(Matrix4f::translation(getPosition(i)));
 //        drawSphere(0.04f, 8, 8);
-    }
+//    }
 
     // EXAMPLE for how to render cloth particles.
     //  - you should replace this code.

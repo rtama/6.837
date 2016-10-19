@@ -10,7 +10,7 @@ float rand_uniform(float low, float hi) {
    float f = (float)rand() / RAND_MAX;
    f *= abs;
    f += low;
-   printf("rand %.2f\n", f);
+//   printf("rand %.2f\n", f);
    return f;
 }
 
