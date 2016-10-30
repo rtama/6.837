@@ -80,12 +80,33 @@ bool Group::intersect(const Ray &r, float tmin, Hit &h) const
 
 Plane::Plane(const Vector3f &normal, float d, Material *m) : Object3D(m) {
     // TODO implement Plane constructor
+    _normal = normal;
+    _d = d;
+    _material = m;
 }
+
 bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
 {
     // TODO implement
+
+    // find intersection time t
+    float numerator = (_d - Vector3f::dot(this->_normal, r.getOrigin())); // may need to put the negative here because of d
+    float denom = Vector3f::dot(this->_normal, r.getDirection());
+    float t_intersect = numerator/denom;
+
+    // behind the camera -> front of camera
+    if (t_intersect < tmin) {
+        return false;
+    } else {
+        if (t_intersect < h.getT()) {
+            h.set(t_intersect, this->_material, this->_normal);
+            return true;
+        }
+    }
+
     return false;
 }
+
 bool Triangle::intersect(const Ray &r, float tmin, Hit &h) const 
 {
     // TODO implement

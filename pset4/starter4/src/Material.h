@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <vecmath.h>
+#include <cmath>
 
 #include "Ray.h"
 #include "Image.h"
@@ -33,6 +34,8 @@ class Material
         const Hit &hit,
         const Vector3f &dirToLight,
         const Vector3f &lightIntensity);
+
+    float clamp(Vector3f v1, Vector3f v2);
 
 protected:
 

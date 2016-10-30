@@ -86,6 +86,9 @@ public:
 
 private:
     // TOOD fill in members
+    Vector3f _normal;
+    float _d;
+    Material* _material;
 };
 
 
