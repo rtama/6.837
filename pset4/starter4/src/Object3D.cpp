@@ -110,6 +110,44 @@ bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
 bool Triangle::intersect(const Ray &r, float tmin, Hit &h) const 
 {
     // TODO implement
+    Vector3f a = getVertex(0);
+    Vector3f b = getVertex(1);
+    Vector3f c = getVertex(2);
+
+    // Ax = B to solve for intersection
+    Vector3f R_d = r.getDirection();
+    Vector3f R_0 = r.getOrigin();
+    Matrix3f A;
+    Vector3f B(3);
+    for (int i=0; i<3; ++i) {
+        Vector3f A_row(a[i] - b[i], a[i] - c[i], R_d[i]);
+        // set rows for A and B
+        A.setRow(i, A_row);
+        B[i] = a[i] - R_0[i];
+    }
+
+    // retrieve barycentric coordinates
+    Vector3f x = A.inverse() * B;
+    float beta = x[0];
+    float gamma = x[1];
+    float alpha = 1 - beta - gamma;
+    float t_intersect = x[2];
+    // make sure that the point is in the triangle
+    bool inTriangle = beta >= 0.0 && gamma >= 0.0 && alpha >= 0.0;
+
+    if (!inTriangle) {
+        return false;
+    }
+    if (t_intersect < tmin) {
+        return false;
+    } else {
+        if (t_intersect < h.getT()) {
+            Vector3f normal = (alpha*getNormal(0) + beta*getNormal(1) + gamma*getNormal(2)).normalized();
+            h.set(t_intersect, this -> material, normal);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -117,6 +155,8 @@ bool Triangle::intersect(const Ray &r, float tmin, Hit &h) const
 Transform::Transform(const Matrix4f &m,
     Object3D *obj) : _object(obj) {
     // TODO implement Transform constructor
+
+
 }
 bool Transform::intersect(const Ray &r, float tmin, Hit &h) const
 {

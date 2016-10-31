@@ -78,7 +78,6 @@ Renderer::traceRay(const Ray &r,
 
     // TODO: IMPLEMENT 
     if (_scene.getGroup()->intersect(r, tmin, h)) {
-//        return h.getMaterial()->getDiffuseColor();
 
         // ambient illumination
         Vector3f I_ambient = _scene.getAmbientLight() * h.getMaterial()->getDiffuseColor();
@@ -102,7 +101,7 @@ Renderer::traceRay(const Ray &r,
         return I_final;
 
     } else {
-        return Vector3f(0, 0, 0);
+        return _scene.getBackgroundColor(r.getDirection());
     };
 }
 
