@@ -163,7 +163,6 @@ bool Transform::intersect(const Ray &r, float tmin, Hit &h) const
     Vector3f origin = r.getOrigin();
     Vector3f dir = r.getDirection();
 
-//    Vector3f origin_l = (_m.inverse().transposed() * Vector4f(origin, 0.0f)).xyz().normalized();
     Vector3f origin_l = (_m.inverse() * Vector4f(origin, 1.0f)).xyz();
     Vector3f dir_l = (_m.inverse() * Vector4f(dir, 0.0f)).xyz().normalized();
 

@@ -76,17 +76,17 @@ Renderer::traceRay(const Ray &r,
     // The starter code only implements basic drawing of sphere primitives.
     // You will implement phong shading, recursive ray tracing, and shadow rays.
 
-    // TODO: IMPLEMENT 
+    // TODO: IMPLEMENT
     if (_scene.getGroup()->intersect(r, tmin, h)) {
 
         // ambient illumination
         Vector3f I_ambient = _scene.getAmbientLight() * h.getMaterial()->getDiffuseColor();
         Vector3f I_final = I_ambient;
         int numLights = _scene.getNumLights();
+        Vector3f point = r.pointAtParameter(h.getT());
 
         for (int i=0; i< numLights; ++i) {
             Light* light = _scene.getLight(i);
-            Vector3f point = r.pointAtParameter(h.getT());
 
             // to be updated parameters
             Vector3f toLight;
@@ -97,6 +97,19 @@ Renderer::traceRay(const Ray &r,
             light->getIllumination(point, toLight, intensity, distToLight); // this updates all the parameters before
             Vector3f shade = h.getMaterial() -> shade(r, h, toLight, intensity);
             I_final = I_final + shade;
+        }
+
+        if (bounces > 0) {
+            // recursive trace ray
+            float rDotN = Vector3f::dot(-r.getDirection(), h.getNormal());
+            Vector3f r_dir = r.getDirection() + 2 * (rDotN) * h.getNormal();
+            Vector3f r_origin = point;
+            Ray newRay(r_origin, r_dir);
+            Hit newHit = Hit();
+
+            // find indirect illumination
+            Vector3f I_recurse = traceRay(newRay, h.getT(), bounces-1, newHit);
+            I_final = I_final + h.getMaterial()->getSpecularColor() * I_recurse;
         }
         return I_final;
 
