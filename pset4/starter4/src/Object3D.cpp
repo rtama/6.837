@@ -147,7 +147,6 @@ bool Triangle::intersect(const Ray &r, float tmin, Hit &h) const
             return true;
         }
     }
-
     return false;
 }
 
@@ -155,11 +154,28 @@ bool Triangle::intersect(const Ray &r, float tmin, Hit &h) const
 Transform::Transform(const Matrix4f &m,
     Object3D *obj) : _object(obj) {
     // TODO implement Transform constructor
-
+    _m = m;
 
 }
 bool Transform::intersect(const Ray &r, float tmin, Hit &h) const
 {
     // TODO implement
-    return false;
+    Vector3f origin = r.getOrigin();
+    Vector3f dir = r.getDirection();
+
+//    Vector3f origin_l = (_m.inverse().transposed() * Vector4f(origin, 0.0f)).xyz().normalized();
+    Vector3f origin_l = (_m.inverse() * Vector4f(origin, 1.0f)).xyz();
+    Vector3f dir_l = (_m.inverse() * Vector4f(dir, 0.0f)).xyz().normalized();
+
+    Ray ray_l = Ray(origin_l, dir_l);
+
+    if(_object -> intersect(ray_l, tmin, h)) {
+        Vector3f normal_ws = (_m.inverse().transposed() * Vector4f(h.getNormal(), 0.0f)).xyz().normalized();
+        h.set(h.getT(), h.getMaterial(), normal_ws);
+        return true;
+    } else {
+        return false;
+    }
 }
+
+
