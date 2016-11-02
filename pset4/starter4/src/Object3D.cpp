@@ -91,7 +91,7 @@ bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
 
     // find intersection time t
     float numerator = (_d - Vector3f::dot(this->_normal, r.getOrigin())); // may need to put the negative here because of d
-    float denom = Vector3f::dot(this->_normal, r.getDirection());
+    float denom = Vector3f::dot(this->_normal, r.getDirection().normalized());
     float t_intersect = numerator/denom;
 
     // behind the camera -> front of camera
@@ -99,6 +99,7 @@ bool Plane::intersect(const Ray &r, float tmin, Hit &h) const
         return false;
     } else {
         if (t_intersect < h.getT()) {
+            // check what direction the normal is pointing
             h.set(t_intersect, this->_material, this->_normal);
             return true;
         }
@@ -164,12 +165,12 @@ bool Transform::intersect(const Ray &r, float tmin, Hit &h) const
     Vector3f dir = r.getDirection();
 
     Vector3f origin_l = (_m.inverse() * Vector4f(origin, 1.0f)).xyz();
-    Vector3f dir_l = (_m.inverse() * Vector4f(dir, 0.0f)).xyz().normalized();
+    Vector3f dir_l = (_m.inverse() * Vector4f(dir, 0.0f)).xyz();
 
     Ray ray_l = Ray(origin_l, dir_l);
 
     if(_object -> intersect(ray_l, tmin, h)) {
-        Vector3f normal_ws = (_m.inverse().transposed() * Vector4f(h.getNormal(), 0.0f)).xyz().normalized();
+        Vector3f normal_ws = (_m.inverse().transposed() * Vector4f(h.getNormal().normalized(), 0.0f)).xyz().normalized();
         h.set(h.getT(), h.getMaterial(), normal_ws);
         return true;
     } else {

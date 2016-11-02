@@ -95,20 +95,42 @@ Renderer::traceRay(const Ray &r,
 
             // get I_diffuse and I_specular
             light->getIllumination(point, toLight, intensity, distToLight); // this updates all the parameters before
-            Vector3f shade = h.getMaterial() -> shade(r, h, toLight, intensity);
+
+            // Shading
+            Vector3f ray_dir = toLight.normalized();
+            Vector3f ray_origin = point;
+            Ray rayShade(ray_origin, ray_dir);
+            Hit hitShade = Hit();
+
+            // trace ray to light source
+            traceRay(rayShade, h.getT(), 0, hitShade); // update hitShade
+            Vector3f intersect = rayShade.pointAtParameter(hitShade.getT());
+            Vector3f shade = Vector3f(0.0, 0.0, 0.0);
+//            std::cout << "shade: " << hitShade.getT() << std::endl;
+
+
+            // intersection before light
+//            std::cout << "intersection length: " << (intersect-ray_origin).abs() << std::endl;
+            if ((intersect-ray_origin).abs() < distToLight) {
+                std::cout << "intersection! " << std::endl;
+                shade = h.getMaterial() -> shade(r, h, toLight, intensity);
+            }
+//            Vector3f shade = h.getMaterial() -> shade(r, h, toLight, intensity);
             I_final = I_final + shade;
         }
 
+        // bounces
         if (bounces > 0) {
             // recursive trace ray
-            float rDotN = Vector3f::dot(-r.getDirection(), h.getNormal());
-            Vector3f r_dir = r.getDirection() + 2 * (rDotN) * h.getNormal();
-            Vector3f r_origin = point;
-            Ray newRay(r_origin, r_dir);
+            float rDotN = Vector3f::dot(-r.getDirection(), h.getNormal().normalized());
+            Vector3f r_dir = (r.getDirection() + 2 * (rDotN) * h.getNormal()).normalized();
+            Vector3f r_origin = point + .01*r_dir;
+            Ray rayBounce(r_origin, r_dir);
             Hit newHit = Hit();
 
             // find indirect illumination
-            Vector3f I_recurse = traceRay(newRay, h.getT(), bounces-1, newHit);
+//            Vector3f I_recurse = traceRay(rayBounce, h.getT(), bounces-1, newHit);
+            Vector3f I_recurse = traceRay(rayBounce, 0.0, bounces-1, newHit);
             I_final = I_final + h.getMaterial()->getSpecularColor() * I_recurse;
         }
         return I_final;
