@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include <string>
+#include <random>
 
 #include "SceneParser.h"
 #include "ArgParser.h"

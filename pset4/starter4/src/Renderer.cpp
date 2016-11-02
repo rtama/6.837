@@ -28,7 +28,7 @@ Renderer::Render()
     // loop through all the pixels in the image
     // generate all the samples
 
-    // This look generates camera rays and callse traceRay.
+    // This look generates camera rays and calls traceRay.
     // It also write to the color, normal, and depth images.
     // You should understand what this code does.
     Camera* cam = _scene.getCamera();
@@ -36,19 +36,58 @@ Renderer::Render()
         float ndcy = 2 * (y / (h - 1.0f)) - 1.0f;
         for (int x = 0; x < w; ++x) {
             float ndcx = 2 * (x / (w - 1.0f)) - 1.0f;
+
             // Use PerspectiveCamera to generate a ray.
             // You should understand what generateRay() does.
-            Ray r = cam->generateRay(Vector2f(ndcx, ndcy));
-
+            std::default_random_engine generator;
+            std::normal_distribution<double> distribution(0.0, 1.0/w);
+            std::normal_distribution<double> distribution_h(0.0, 1.0/h);
+            std::vector<Ray> rays;
             Hit h;
-            Vector3f color = traceRay(r, cam->getTMin(), _args.bounces, h);
 
-            image.setPixel(x, y, color);
-            nimage.setPixel(x, y, (h.getNormal() + 1.0f) / 2.0f);
-            float range = (_args.depth_max - _args.depth_min);
-            if (range) {
-                dimage.setPixel(x, y, Vector3f((h.t - _args.depth_min) / range));
+            if (_args.jitter) {
+                // 3 different jittered rays
+                for (int i=0; i<3; ++i) {
+                    double w_j = distribution(generator);
+                    double h_j = distribution_h(generator);
+                    rays.push_back(cam->generateRay(Vector2f(ndcx+w_j, ndcy+h_j)));
+                }
+
+                // want to supersample with 3 rays
+                Hit h1;
+                Vector3f color = traceRay(rays[0], cam->getTMin(), _args.bounces, h1);
+
+                Hit h2;
+                Vector3f color2 = traceRay(rays[1], cam->getTMin(), _args.bounces, h2);
+
+                Hit h3;
+                Vector3f color3 = traceRay(rays[2], cam->getTMin(), _args.bounces, h3);
+
+                Vector3f ave_color = (color + color2 + color3)/3;
+                Vector3f ave_normal = (h.getNormal() + h2.getNormal() + h3.getNormal())/3;
+                ave_normal = ave_normal.normalized();
+
+                image.setPixel(x, y, ave_color);
+                nimage.setPixel(x, y, (ave_normal + 1.0f) / 2.0f);
+
+                float range = (_args.depth_max - _args.depth_min);
+                if (range) {
+                    dimage.setPixel(x, y, Vector3f((h1.t - _args.depth_min) / range));
+                }
+            } else {
+                Ray ray = cam->generateRay(Vector2f(ndcx, ndcy));
+                Vector3f color = traceRay(ray, cam->getTMin(), _args.bounces, h);
+
+                image.setPixel(x, y, color);
+                nimage.setPixel(x, y, (h.getNormal() + 1.0f) / 2.0f);
+
+                float range = (_args.depth_max - _args.depth_min);
+                if (range) {
+                    dimage.setPixel(x, y, Vector3f((h.t - _args.depth_min) / range));
+                }
             }
+
+
         }
     }
     // END SOLN
@@ -95,27 +134,30 @@ Renderer::traceRay(const Ray &r,
 
             // get I_diffuse and I_specular
             light->getIllumination(point, toLight, intensity, distToLight); // this updates all the parameters before
-
-            // Shading
-            Vector3f ray_dir = toLight.normalized();
-            Vector3f ray_origin = point;
-            Ray rayShade(ray_origin, ray_dir);
-            Hit hitShade = Hit();
-
-            // trace ray to light source
-            traceRay(rayShade, h.getT(), 0, hitShade); // update hitShade
-            Vector3f intersect = rayShade.pointAtParameter(hitShade.getT());
             Vector3f shade = Vector3f(0.0, 0.0, 0.0);
-//            std::cout << "shade: " << hitShade.getT() << std::endl;
 
+            // if shadows flag
+            if (_args.shadows) {
+                // Shading
+                Vector3f ray_dir = toLight.normalized();
+                Vector3f ray_origin = point + 0.01*ray_dir;
+                Ray rayShade(ray_origin, ray_dir);
+                Hit hitShade = Hit();
 
-            // intersection before light
-//            std::cout << "intersection length: " << (intersect-ray_origin).abs() << std::endl;
-            if ((intersect-ray_origin).abs() < distToLight) {
-                std::cout << "intersection! " << std::endl;
+                // trace ray to light source
+                traceRay(rayShade, 0, 0, hitShade); // update hitShade
+                Vector3f intersect = rayShade.pointAtParameter(hitShade.getT());
+
+                if (hitShade.getT() < std::numeric_limits<float>::max() && (intersect - ray_origin).abs() < distToLight) {
+                    shade = Vector3f(0.0, 0.0, 0.0);
+                } else {
+                    shade = h.getMaterial() -> shade(r, h, toLight, intensity);
+                }
+
+            } else {
                 shade = h.getMaterial() -> shade(r, h, toLight, intensity);
             }
-//            Vector3f shade = h.getMaterial() -> shade(r, h, toLight, intensity);
+
             I_final = I_final + shade;
         }
 
@@ -129,7 +171,6 @@ Renderer::traceRay(const Ray &r,
             Hit newHit = Hit();
 
             // find indirect illumination
-//            Vector3f I_recurse = traceRay(rayBounce, h.getT(), bounces-1, newHit);
             Vector3f I_recurse = traceRay(rayBounce, 0.0, bounces-1, newHit);
             I_final = I_final + h.getMaterial()->getSpecularColor() * I_recurse;
         }
