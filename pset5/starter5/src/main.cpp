@@ -39,7 +39,9 @@ objparser scene;
 Vector3f  light_dir;
 glfwtimer timer;
 std::map<std::string, GLuint> gltextures;
-
+GLuint fb;               // framebuffer handle
+GLuint fb_depthtex;      // framebuffer depth texture handle
+GLuint fb_colortex;      // framebuffer color texture handle
 
 // FUNCTION IMPLEMENTATIONS
 
@@ -69,6 +71,19 @@ void drawScene(GLint program, Matrix4f V, Matrix4f P) {
         }
         updateMaterialUniforms(program, b.mat.diffuse, b.mat.ambient, b.mat.specular, b.mat.shininess, 1.0);
         glBindTexture(GL_TEXTURE_2D, gltextures[b.mat.diffuse_texture]);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, fb_depthtex);
+        glActiveTexture(GL_TEXTURE0);
+
+        // bind shadowTex
+        int loc = glGetUniformLocation(program, "shadowTex");
+        glUniform1i(loc, 1);        // bind sample to texture unit 1
+
+
+        GLint location = glGetUniformLocation(program, "light_VP");
+        Matrix4f MVP = getLightProjection() * getLightView() * Matrix4f::identity();
+        glUniformMatrix4fv(location, 1, false, MVP);
         recorder.draw();
     }
 }
@@ -82,6 +97,7 @@ void loadTextures() {
         GLuint gltexture;
         glGenTextures(1, &gltexture);
         glBindTexture(GL_TEXTURE_2D, gltexture);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.w, image.h, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data.data());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -96,12 +112,64 @@ void freeTextures() {
    }
 }
 
+void loadFramebuffer() {
+    // color handle
+    glGenTextures(1, &fb_colortex);
+    glBindTexture(GL_TEXTURE_2D, fb_colortex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    // depth handle
+    glGenTextures(1, &fb_depthtex);
+    glBindTexture(GL_TEXTURE_2D, fb_depthtex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    // framebuffer handle
+    glGenFramebuffers(1, &fb);
+    glBindFramebuffer(GL_FRAMEBUFFER, fb);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb_colortex, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fb_depthtex, 0);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if ( status != GL_FRAMEBUFFER_COMPLETE) {
+        printf("ERROR, incomplete framebuffer\n");
+        exit(-1);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void freeFramebuffer() {
+    glDeleteFramebuffers(1, &fb_colortex);
+    glDeleteTextures(1, &fb_colortex);
+    glDeleteTextures(1, &fb_depthtex);
+}
+
+Matrix4f getLightView() {
+    Vector3f center = Vector3f(0,1,0);
+    Vector3f eye = center + light_dir;
+    // calculate up vector orthogonal to light_dir
+    Vector3f up = Vector3f(-light_dir.y(), light_dir.x(), 0).normalized();
+
+    return Matrix4f::lookAt(eye, center, up);
+}
+
+Matrix4f getLightProjection() {
+    return Matrix4f::orthographicProjection(50, 50, -10, 10);
+}
+
+
 void draw() {
     // 2. DEPTH PASS
     // - bind framebuffer
     // - configure viewport
     // - compute camera matrices (light source as camera)
     // - call drawScene
+    glBindFramebuffer(GL_FRAMEBUFFER, fb);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glUseProgram(program_color);
+    drawScene(program_color, getLightView(), getLightProjection());
 
     // 1. LIGHT PASS
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -115,6 +183,10 @@ void draw() {
 
     // 3. DRAW DEPTH TEXTURE AS QUAD
     // drawTexturedQuad() helper in main.h is useful here.
+    glViewport(0, 0, 400, 400);
+    drawTexturedQuad(fb_depthtex);
+    glViewport(400, 0, 400, 400);
+    drawTexturedQuad(fb_colortex);
 }
 
 // Main routine.
@@ -151,7 +223,7 @@ int main(int argc, char* argv[])
     glEnable(GL_BLEND);
     // TODO add loadXYZ() function calls here
     loadTextures();
-    // loadFramebuffer();
+    loadFramebuffer();
 
     camera.SetDimensions(600, 600);
     camera.SetPerspective(50);
@@ -195,7 +267,7 @@ int main(int argc, char* argv[])
     // All OpenGL resource that are created with
     // glGen* or glCreate* must be freed.
     // TODO: add freeXYZ() function calls here
-    // freeFramebuffer();
+    freeFramebuffer();
     freeTextures();
 
     glfwDestroyWindow(window);
