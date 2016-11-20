@@ -1,0 +1,11 @@
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/CMakeFiles/a5.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/3rd_party/glfw/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/3rd_party/glfw/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/3rd_party/glfw/src/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/3rd_party/glfw/src/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/3rd_party/glfw/src/CMakeFiles/glfw.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/vecmath/CMakeFiles/edit_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/vecmath/CMakeFiles/rebuild_cache.dir
+/Users/reecetamashiro/code/classes/6.837/pset5/starter5/build/vecmath/CMakeFiles/vecmath.dir
