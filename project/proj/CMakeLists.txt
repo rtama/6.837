@@ -57,6 +57,7 @@ list (APPEND A3_SRC
   src/pendulumsystem.cpp
   src/simplesystem.cpp
   src/spring.cpp
+  src/rigidsystem.cpp
 )
 list (APPEND A3_HEADER
   src/gl.h
@@ -69,6 +70,7 @@ list (APPEND A3_HEADER
   src/pendulumsystem.h
   src/simplesystem.h
   src/spring.h
+  src/rigidsystem.h
 )
 
 add_executable(a3 ${A3_SRC} ${A3_HEADER})
