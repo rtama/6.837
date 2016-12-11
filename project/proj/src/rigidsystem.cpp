@@ -43,7 +43,7 @@ RigidSystem::RigidSystem()
 
     // float f = rand_uniform(-0.5f, 0.5f);
     // in your initial conditions.
-    std::vector<Particle> start;
+    std::vector<Vector3f> start;
 
     // Create initial particles
     for (int i = 0; i < NUM_PARTICLES; ++i) {
@@ -54,10 +54,10 @@ RigidSystem::RigidSystem()
 
         // create new particle
         Vector3f pos = Vector3f(f, 1.0 + f2, f3);
-        Vector3f vel = Vector3f(1.0, 0.0, 1.0);
-        Particle part = Particle(pos, vel, RADIUS);
+        Vector3f vel = Vector3f(2.0, 0.0, 1.0);
 
-        start.push_back(part);
+        start.push_back(pos);
+        start.push_back(vel);
     }
     setState(start);
 }
@@ -171,7 +171,7 @@ void RigidSystem::draw(GLProgram& gl)
         Vector3f pos = getPosition(i);
         gl.updateModelMatrix(Matrix4f::translation(pos));
         // drawSphere(0.075f, 10, 10);
-        drawSphere(radius, 10, 10);
+        drawSphere(RADIUS, 10, 10);
     }
 }
 

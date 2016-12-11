@@ -10,8 +10,8 @@ public:
     Particle(Vector3f pos, Vector3f vel, float r);
 
     // Getter functions
-    Vector3f getPosition(){return m_position};
-    Vector3f getVelocity(){return m_velocity};
+    Vector3f getPosition(){return m_position;};
+    Vector3f getVelocity(){return m_velocity;};
     float getRadius(){return radius;};
 
     // Setter functions

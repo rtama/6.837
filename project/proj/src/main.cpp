@@ -37,8 +37,7 @@ void drawAxis();
 // Some constants
 const Vector3f LIGHT_POS(3.0f, 3.0f, 5.0f);
 const Vector3f LIGHT_COLOR(120.0f, 120.0f, 120.0f);
-// const Vector3f FLOOR_COLOR(1.0f, 0.0f, 0.0f);
-const Vector3f FLOOR_COLOR(0.4f,0.4f, 0.4f);
+const Vector3f FLOOR_COLOR(1.0f, 0.0f, 0.0f);
 
 // time keeping
 // current "tick" (e.g. clock number of processor)
@@ -233,7 +232,6 @@ void resetTime() {
     start_tick = glfwGetTimerValue();
 }
 
-// TODO: To add external forces like wind or turbulances,
 //       update the external forces before each time step
 void stepSystem()
 {
@@ -263,7 +261,6 @@ void drawSystem()
     // set uniforms for floor
     gl.updateMaterial(FLOOR_COLOR);
     gl.updateModelMatrix(Matrix4f::translation(0, -1.1f, 0));
-
     // draw floor
     drawQuad(2.0f);
 }

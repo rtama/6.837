@@ -8,4 +8,3 @@ Particle::Particle(Vector3f pos, Vector3f vel, float r) {
     setRadius(r);
 }
 
-#endif
