@@ -37,7 +37,8 @@ void drawAxis();
 // Some constants
 const Vector3f LIGHT_POS(3.0f, 3.0f, 5.0f);
 const Vector3f LIGHT_COLOR(120.0f, 120.0f, 120.0f);
-const Vector3f FLOOR_COLOR(1.0f, 0.0f, 0.0f);
+// const Vector3f FLOOR_COLOR(1.0f, 0.0f, 0.0f);
+const Vector3f FLOOR_COLOR(0.4f,0.4f, 0.4f);
 
 // time keeping
 // current "tick" (e.g. clock number of processor)
@@ -261,9 +262,10 @@ void drawSystem()
 
     // set uniforms for floor
     gl.updateMaterial(FLOOR_COLOR);
-    gl.updateModelMatrix(Matrix4f::translation(0, -5.0f, 0));
+    gl.updateModelMatrix(Matrix4f::translation(0, -1.1f, 0));
+
     // draw floor
-    drawQuad(50.0f);
+    drawQuad(2.0f);
 }
 
 //-------------------------------------------------------------------
@@ -325,7 +327,7 @@ int main(int argc, char** argv)
 
     camera.SetDimensions(600, 600);
     camera.SetPerspective(50);
-    camera.SetDistance(10);
+    camera.SetDistance(8);
 
     // Setup particle system
     initSystem();

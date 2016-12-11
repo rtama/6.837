@@ -5,6 +5,7 @@
 #include <vecmath.h>
 #include <cstdint>
 #include "spring.h"
+#include "particle.h"
 
 
 // helper for uniform distribution
@@ -29,7 +30,7 @@ public:
     Vector3f getPosition(int i) {return m_vVecState[i*2];};
 
  protected:
-    std::vector<Vector3f> m_vVecState;
+    std::vector<Particle> m_vVecState;
 
     // springs[i] = Spring object for particle i
     std::vector<Spring> springs;

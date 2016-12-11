@@ -107,7 +107,7 @@ void drawSphere(float r, int slices, int stacks) {
     assert(stacks > 1);
     assert(r > 0);
 
-    // TODO reuse recorder if sphere meshing becomes a bottleneck.
+    // reuse recorder if sphere meshing becomes a bottleneck.
     VertexRecorder rec;
 
     float phistep = M_PIf * 2 / slices;

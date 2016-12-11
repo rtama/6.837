@@ -58,6 +58,7 @@ list (APPEND A3_SRC
   src/simplesystem.cpp
   src/spring.cpp
   src/rigidsystem.cpp
+  src/particle.cpp
 )
 list (APPEND A3_HEADER
   src/gl.h
@@ -71,6 +72,7 @@ list (APPEND A3_HEADER
   src/simplesystem.h
   src/spring.h
   src/rigidsystem.h
+  src/particle.h
 )
 
 add_executable(a3 ${A3_SRC} ${A3_HEADER})
