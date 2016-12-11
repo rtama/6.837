@@ -23,7 +23,7 @@ public:
     std::vector<Vector3f> getState() { return m_vVecState; };
 
     // setter method for the system's state
-    void setState(const std::vector<Vector3f>  & newState) { m_vVecState = newState; };
+    virtual void setState(const std::vector<Vector3f>  & newState) { m_vVecState = newState; };
 
     // get position of particle i
     Vector3f getPosition(int i) {return m_vVecState[i*2];};

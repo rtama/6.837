@@ -11,6 +11,7 @@ public:
     RigidSystem();
 
     std::vector<Vector3f> evalF(std::vector<Vector3f> state) override;
+    void setState(const std::vector<Vector3f>  & newState) override;
     void draw(GLProgram&);
 
     // inherits

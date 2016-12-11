@@ -6,7 +6,6 @@
 using namespace std;
 void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
 {
-   //TODO: See handout 3.1
 //    std::cout << "forward euler" << std::endl;
     vector<Vector3f> state = particleSystem -> getState();
     vector<Vector3f> derivative = particleSystem -> evalF(state);
@@ -21,7 +20,6 @@ void ForwardEuler::takeStep(ParticleSystem* particleSystem, float stepSize)
 
 void Trapezoidal::takeStep(ParticleSystem* particleSystem, float stepSize)
 {
-   //TODO: See handout 3.1
     vector<Vector3f> state = particleSystem -> getState();
     int size = state.size();
     vector<Vector3f> firstDerivative = particleSystem -> evalF(state);
@@ -47,7 +45,6 @@ void Trapezoidal::takeStep(ParticleSystem* particleSystem, float stepSize)
 
 void RK4::takeStep(ParticleSystem* particleSystem, float stepSize)
 {
-   //TODO: See handout 4.4
     vector<Vector3f> state = particleSystem -> getState();
     int size = state.size();
     vector<Vector3f> deriv1 = particleSystem -> evalF(state);
@@ -79,7 +76,6 @@ void RK4::takeStep(ParticleSystem* particleSystem, float stepSize)
     for (int i=0; i < size; ++i) {
         RK4State[i] = state[i] + (stepSize/6.0 * (deriv1[i] + 2.0*deriv2[i] + 2.0*deriv3[i] + deriv4[i]));
     }
-//    particleSystem -> setState(RK4State);
     particleSystem ->setState(RK4State);
 }
 

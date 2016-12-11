@@ -1,6 +1,7 @@
 #include "rigidsystem.h"
 
 #include <cassert>
+#include <algorithm>
 #include "camera.h"
 #include "vertexrecorder.h"
 #include "spring.h"
@@ -8,62 +9,84 @@
 #include <iostream>
 #include <string>
 
-// TODO adjust to number of particles.
-const int NUM_PARTICLES = 5;        // num_particles includes fixed point
-const float m = .05;
+// particle constants
+const int NUM_PARTICLES = 10;        // num_particles includes fixed point
+const float m = .5;
 const Vector3f g = Vector3f(0.0, -9.8, 0.0);
-const float k_vd = .02;
-const float k_s = 1.5;
-const float restLength = 0.01;
+const float k_vd = 1;
 
+/*TODO:
+ * - side boundaries
+ * - collision particles
+ * - Friction
+ * - Grid data structure
+ */
+
+
+// container constants
+const int WIDTH = 1;
 
 RigidSystem::RigidSystem()
 {
-
-    // TODO 4.2 Add particles for simple pendulum
-    // TODO 4.3 Extend to multiple particles
-
     // To add a bit of randomness, use e.g.
     // float f = rand_uniform(-0.5f, 0.5f);
     // in your initial conditions.
     std::vector<Vector3f> start;
 
     // add particles
-    for (int i = 0; i < NUM_PARTICLES; ++i) {
-        // Add fixed point
-        if (i == 0) {
-            Vector3f fixedPointPos = Vector3f(-0.5, 1.0, 0.0);
-            Vector3f fixedPointV = Vector3f(0.0, 0.0, 0.0);
-            start.push_back(fixedPointPos);
-            start.push_back(fixedPointV);
 
-        } else {
-            // any other particles
-            float f = rand_uniform(-0.1f, 0.1f);
-            Vector3f pos = Vector3f(-0.5 + f, 1.0 + f, f);
-            Vector3f vel = Vector3f(0.0, 0.0, 0.0);
-            start.push_back(pos);
-            start.push_back(vel);
-        }
+    // corners of the container
+    start.push_back(Vector3f(-WIDTH, -WIDTH, -WIDTH));
+    start.push_back(Vector3f(0, 0, 0));
+
+    start.push_back(Vector3f(WIDTH, WIDTH, WIDTH));
+    start.push_back(Vector3f(0, 0, 0));
+
+    for (int i = 2; i < NUM_PARTICLES; ++i) {
+        float f = rand_uniform(-0.1f, 0.1f);
+        Vector3f pos = Vector3f(-0.5 + f, 1.0 + f, f);
+        Vector3f vel = Vector3f(0.0, 0.0, 0.0);
+        start.push_back(pos);
+        start.push_back(vel);
     }
     setState(start);
 }
 
+// override set state so we check for the boundaries
+void RigidSystem::setState(const std::vector<Vector3f> & newState) {
+    // final state array
+    std::vector<Vector3f> finalState;
+    for (int i=0; i<newState.size()/2; ++i) {
+        Vector3f pos = newState[2*i];
+        Vector3f vel = newState[2*i+1];
+
+        // bottom of the container
+        if (pos.y() < -WIDTH) {
+            float cap = 0;
+            // reflect position back above and kill velocity
+            pos[1] = std::max(-(float)WIDTH, pos[1]);
+            vel[1] = - std::min(cap, vel[1]+1);
+        }
+        finalState.push_back(pos);
+        finalState.push_back(vel);
+    }
+    m_vVecState = finalState;
+}
 
 std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
 {
     std::vector<Vector3f> f(state.size());
-    // TODO 4.1: implement evalF
     //  - gravity
     //  - viscous drag
     //  - springs
 
-    // first fixed particle doesn't move
-    f[0] = Vector3f(0.0, 0.0, 0.0);
-    f[1] = Vector3f(0.0, 0.0, 0.0);
+    for (int i=0; i<2; ++i) {
+        f[2*i] = Vector3f(0,0,0);
+        f[2*i+1] = Vector3f(0,0,0);
+    }
 
     // iterate through number of particles
-    for (int i=1; i<(state.size()/2); ++i) {
+    for (int i=2; i<(state.size()/2); ++i) {
         Vector3f pos = state[2*i];
         Vector3f vel = state[2*i+1];
 
@@ -90,8 +113,6 @@ void RigidSystem::draw(GLProgram& gl)
 {
     const Vector3f PENDULUM_COLOR(0.73f, 0.0f, 0.83f);
     gl.updateMaterial(PENDULUM_COLOR);
-
-    // TODO 4.2, 4.3
 
     // iterate through i particles
     for (int i=0; i<getState().size()/2; ++i) {

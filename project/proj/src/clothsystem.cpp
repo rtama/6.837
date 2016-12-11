@@ -280,7 +280,6 @@ void ClothSystem::switchWind() {
     }
 }
 
-
 void ClothSystem::draw(GLProgram& gl)
 {
     //TODO 5: render the system 
