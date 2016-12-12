@@ -30,6 +30,7 @@ void stepSystem();
 void drawSystem();
 void freeSystem();
 void resetTime();
+void addParticles();
 
 void initRendering();
 void drawAxis();
@@ -106,6 +107,13 @@ static void keyCallback(GLFWwindow* window, int key,
         switchWind();
         break;
     }
+    case 'A':
+    {
+        cout << "Adding Particles" << endl;
+        addParticles();
+        break;
+    }
+
     default:
         cout << "Unhandled key press " << key << "." << endl;
     }
@@ -208,6 +216,11 @@ void initSystem()
     pendulumSystem = new PendulumSystem();
     clothSystem = new ClothSystem();
     rigidSystem = new RigidSystem();
+}
+
+// Added functions
+void addParticles() {
+    rigidSystem -> addParticles();
 }
 
 void switchHold() {
