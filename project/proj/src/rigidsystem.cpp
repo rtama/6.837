@@ -13,7 +13,7 @@
 // particle constants
 const int INIT_PARTICLES= 10;        // num_particles includes fixed point
 const float RADIUS = .2;
-const float m = 10.0;
+const float m = 5.0;
 bool toAddParticles = false;
 const float NUM_ADD = 3;
 
@@ -22,13 +22,13 @@ const float NUM_ADD = 3;
 const Vector3f g = Vector3f(0.0, -2.8, 0.0);
 const float k_vd = 1;               // viscous drag
 const float restitution = 0.1;       // restitution constant
-const float k_f = .9;               // coeff of friction
+const float k_f = 2;               // coeff of friction
 
 // container constants
 const int WIDTH = 1;
 
 /*TODO:
- * - Side boundaries
+ * - Side boundaries = done
  * - Naive collision particles = done
  * - Kill unused particles = done
  * - Stream of particles = done
@@ -54,16 +54,55 @@ RigidSystem::RigidSystem()
      * particles no overlapping initially
      * controllable stream
      */
-
     // float f = rand_uniform(-0.5f, 0.5f);
-    // in your initial conditions.
-    std::vector<Vector3f> start;
 
     // Create initial particles
     std::vector<Vector3f> particles = genParticles(INIT_PARTICLES);
     setState(particles);
 }
 
+// Calculate new velocity and position when colliding with boundaries
+void RigidSystem::boundaryCollisions(Vector3f& vel, Vector3f& pos) {
+    Vector3f zero = Vector3f(0,0,0);
+    float inv_m = 1/m;
+
+    // bottom of the container
+    //if (pos.y() < -WIDTH && std::abs(pos.x()) < WIDTH && std::abs(pos.z()) < WIDTH) {
+    if (pos.y() < -WIDTH) {
+        // reflect position back above and kill velocity
+        pos[1] = std::max(-(float)WIDTH, pos[1]);
+        Vector3f normal = Vector3f(0,1,0);
+        vel = collision(vel, zero, normal, inv_m, 0.0);
+    }
+
+    // left wall
+    if (pos.x() < -WIDTH) {
+        pos[0] = -WIDTH;
+        Vector3f normal = Vector3f(1, 0, 0);
+        vel = collision(vel, zero, normal, inv_m, 0.0);
+    }
+
+    // right wall
+    if (pos.x() > WIDTH) {
+        pos[0] = WIDTH;
+        Vector3f normal = Vector3f(-1, 0, 0);
+        vel = collision(vel, zero, normal, inv_m, 0.0);
+    }
+
+    // front wall
+    if (pos.z() > WIDTH) {
+        pos[2] = WIDTH;
+        Vector3f normal = Vector3f(0, 0, -1);
+        vel = collision(vel, zero, normal, inv_m, 0.0);
+    }
+
+    // back wall
+    if (pos.z() < -WIDTH) {
+        pos[2] = -WIDTH;
+        Vector3f normal = Vector3f(0, 0, 1);
+        vel = collision(vel, zero, normal, inv_m, 0.0);
+    }
+}
 
 // override set state so we check for the boundaries
 void RigidSystem::setState(const std::vector<Vector3f> & newState) {
@@ -78,22 +117,8 @@ void RigidSystem::setState(const std::vector<Vector3f> & newState) {
             continue;
         }
 
-        Vector3f zero = Vector3f(0,0,0);
-        // bottom of the container
-        if (pos.y() < -WIDTH && std::abs(pos.x()) < WIDTH && std::abs(pos.z()) < WIDTH) {
-            // reflect position back above and kill velocity
-            pos[1] = std::max(-(float)WIDTH, pos[1]);
-
-            //constants
-            Vector3f normal = Vector3f(0,1,0);
-            float inv_m = 1/m;
-            vel = collision(vel, zero, normal, inv_m, 0.0);
-        }
-
-        if (pos.x() < -WIDTH) {
-            pos[0] = -WIDTH;
-
-        }
+        // calculate boundary collisions
+        boundaryCollisions(vel, pos);
 
         // check other particles
         for (int c=0; c<newState.size()/2; ++c) {
@@ -204,12 +229,9 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
         // G + VG
         Vector3f tot = F_g + F_vd;
 
-        //std::cout << "vel: " << vel.y() << std::endl;
-
         // Friction
         Vector3f F_f;
         // only apply friction when on the ground
-        //std::cout << "vel: " << vel.y() << " pos: " << pos.y() << std::endl;
         if (approx(vel.y(), -0.0887) && approx(pos.y(), -WIDTH)) {
             // calculate direction of friction
             float f_normal = m * g.abs();
@@ -238,25 +260,15 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
                     if (dist == 0) {
                         std::cerr << "divide by zero" << std::endl;
                     } else {
-                        F_c = collision_vect.normalized() * 20;
+                        //F_c = collision_vect.normalized() * 50;
+                        F_c = collision_vect.normalized()*10/dist;
 
                     }
                 }
 
             }
         }
-            /*
-            if (dist < (2*RADIUS)*(2*RADIUS)) {
-                if (dist == 0) {
-                    std::cerr << "divide by zero" << std::endl;
-                } else {
-                    float inv_m = 1/m;
 
-                    //pos += collision_vect/4;
-                    vel = collision(vel, collide_vel, normal, inv_m, inv_m);
-                }
-            }
-*/
         // net force
         Vector3f F_all = F_g + F_vd + F_f + F_c;
         Vector3f acceleration = F_all/m;
