@@ -262,10 +262,8 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
                     } else {
                         //F_c = collision_vect.normalized() * 50;
                         F_c = collision_vect.normalized()*10/dist;
-
                     }
                 }
-
             }
         }
 
@@ -284,11 +282,24 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
 // render the system (ie draw the particles)
 void RigidSystem::draw(GLProgram& gl)
 {
-    const Vector3f PENDULUM_COLOR(0.73f, 0.0f, 0.83f);
-    gl.updateMaterial(PENDULUM_COLOR);
+    std::vector<Vector3f> COLORS;
+    // create color bank
+    const Vector3f PARTICLE_COLOR(0.73f, 0.0f, 0.83f);
+    const Vector3f PARTICLE_COLOR1(0.0f, 0.73f, 0.83f);
+    const Vector3f PARTICLE_COLOR2(0.73f, 0.73f, 0.0f);
+    const Vector3f PARTICLE_COLOR3(0.23f, 0.73f, 0.23f);
+    const Vector3f PARTICLE_COLOR4(0.73f, 0.23f, 0.23f);
+    COLORS.push_back(PARTICLE_COLOR);
+    COLORS.push_back(PARTICLE_COLOR1);
+    COLORS.push_back(PARTICLE_COLOR2);
+    COLORS.push_back(PARTICLE_COLOR3);
+    COLORS.push_back(PARTICLE_COLOR4);
 
     // iterate through i particles
     for (int i=0; i<getState().size()/2; ++i) {
+
+        gl.updateMaterial(COLORS[i%5]);
+
         Vector3f pos = getPosition(i);
         gl.updateModelMatrix(Matrix4f::translation(pos));
         // drawSphere(0.075f, 10, 10);
