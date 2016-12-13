@@ -27,7 +27,6 @@ protected:
 private:
     // generate particles for internal use
     std::vector<Vector3f> genParticles(int num);
-
 };
 
 #endif

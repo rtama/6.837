@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <math.h>
 #include "camera.h"
 #include "vertexrecorder.h"
 #include "spring.h"
@@ -19,13 +20,16 @@ const float NUM_ADD = 3;
 
 // physics constants
 //const Vector3f g = Vector3f(0.0, -9.8, 0.0);
-const Vector3f g = Vector3f(0.0, -2.8, 0.0);
-const float k_vd = 1;               // viscous drag
+const Vector3f g = Vector3f(0.0, -4.9, 0.0);
+const float k_vd = 2;               // viscous drag
 const float restitution = 0.1;       // restitution constant
-const float k_f = 2;               // coeff of friction
+const float k_f = 1;               // coeff of friction
 
 // container constants
+const int BOTTOM = -1;
 const int WIDTH = 1;
+const int voxels = (2*WIDTH)/(2*RADIUS);
+const float voxel_width = 2*RADIUS;
 
 /*TODO:
  * - Side boundaries = done
@@ -48,6 +52,18 @@ bool approx(float a, float b) {
     }
 }
 
+// grid optimization
+//int grid[voxels][voxels][voxels] = {-1};
+
+// get voxel location of particle position
+std::vector<int> getVoxel(Vector3f pos) {
+    std::vector<int> voxel;
+    voxel.push_back(floor(pos.x()+.01 + WIDTH)/voxel_width);
+    voxel.push_back(floor(pos.y()+.01 - BOTTOM)/voxel_width);
+    voxel.push_back(floor(pos.z()+.01 + WIDTH)/voxel_width);
+    return voxel;
+}
+
 RigidSystem::RigidSystem()
 {
     /*
@@ -68,7 +84,7 @@ void RigidSystem::boundaryCollisions(Vector3f& vel, Vector3f& pos) {
 
     // bottom of the container
     //if (pos.y() < -WIDTH && std::abs(pos.x()) < WIDTH && std::abs(pos.z()) < WIDTH) {
-    if (pos.y() < -WIDTH) {
+    if (pos.y() < BOTTOM) {
         // reflect position back above and kill velocity
         pos[1] = std::max(-(float)WIDTH, pos[1]);
         Vector3f normal = Vector3f(0,1,0);
@@ -104,10 +120,50 @@ void RigidSystem::boundaryCollisions(Vector3f& vel, Vector3f& pos) {
     }
 }
 
+std::vector<std::vector<int>> getCollisionParticles(Vector3f pos) {
+    std::vector<std::vector<int>> check;
+    std::vector<int> vox = getVoxel(pos);
+
+    for (int x=std::max(0, vox[0]); x < std::min(voxels, vox[0]+2); ++x) {
+        for (int y=std::max(0, vox[1]); y < std::min(voxels, vox[1]+2); ++y) {
+            for (int z=std::max(0, vox[2]); z < std::min(voxels, vox[2]+2); ++z) {
+                if (x!=vox[0] || y!=vox[1] || z!=vox[2]) {
+                    std::vector<int> current;
+                    current.push_back(x);
+                    current.push_back(y);
+                    current.push_back(z);
+                    check.push_back(current);
+                }
+            }
+        }
+
+    }
+
+    return check;
+}
+
+
 // override set state so we check for the boundaries
 void RigidSystem::setState(const std::vector<Vector3f> & newState) {
     // final state array
     std::vector<Vector3f> finalState;
+
+    // add particles to my grid for faster collision lookup
+    // initialize grid
+    // int grid[voxels][voxels][voxels] = {-1};
+
+    /*
+    for (int i=0; i<newState.size()/2; ++i) {
+        Vector3f pos = newState[2*i];
+
+        // add particle to grid
+        std::vector<int> vox = getVoxel(pos);
+        grid[vox[0]][vox[1]][vox[2]] = i;
+        //std::cout << vox[0] << ", " << vox[1] << ", " << vox[2] << std::endl;
+    }*/
+
+    // actually attempt to set state
+    // boundaries + collisions
     for (int i=0; i<newState.size()/2; ++i) {
         Vector3f pos = newState[2*i];
         Vector3f vel = newState[2*i+1];
@@ -120,25 +176,65 @@ void RigidSystem::setState(const std::vector<Vector3f> & newState) {
         // calculate boundary collisions
         boundaryCollisions(vel, pos);
 
+        std::vector<int> particleIndices;
+        // all particles to check for this particular position
+        /*
+        std::vector<std::vector<int>> check = getCollisionParticles(pos);
+        for (std::vector<int> c : check) {
+            int particle = grid[c[0]][c[1]][c[2]];
+            if (particle != -1) {
+                particleIndices.push_back(particle);
+            }
+        }*/
+
         // check other particles
+        //for (int c=0; c<newState.size()/2; ++c) {
+        //make sure that there are any adjacent particles
+        /*
+        if (particleIndices.size() > 0) {
+            for (int c : particleIndices) {
+                if (c != i) {
+                    Vector3f collide_pos = newState[2 * c];
+                    Vector3f collide_vel = newState[2 * c + 1];
+
+                    // vector pointing to this particle
+                    Vector3f collision_vect = pos - collide_pos;
+                    Vector3f normal = collision_vect.normalized();
+                    float dist = collision_vect.absSquared();
+
+                    if (dist < (2 * RADIUS) * (2 * RADIUS)) {
+                        if (dist == 0) {
+                            std::cerr << "divide by zero" << std::endl;
+                        } else {
+                            float inv_m = 1 / m;
+
+                            //pos += collision_vect/4;
+                            vel = collision(vel, collide_vel, normal, inv_m, inv_m);
+                        }
+                    }
+                }
+            }
+        }*/
+        Vector3f finalVel = Vector3f(0,0,0);
         for (int c=0; c<newState.size()/2; ++c) {
             if (c != i) {
-                Vector3f collide_pos = newState[2*c];
-                Vector3f collide_vel = newState[2*c+1];
+                Vector3f collide_pos = newState[2 * c];
+                Vector3f collide_vel = newState[2 * c + 1];
 
                 // vector pointing to this particle
                 Vector3f collision_vect = pos - collide_pos;
                 Vector3f normal = collision_vect.normalized();
                 float dist = collision_vect.absSquared();
 
-                if (dist < (2*RADIUS)*(2*RADIUS)) {
+                if (dist < (2 * RADIUS) * (2 * RADIUS)) {
                     if (dist == 0) {
                         std::cerr << "divide by zero" << std::endl;
                     } else {
-                        float inv_m = 1/m;
+                        float inv_m = 1 / m;
 
                         //pos += collision_vect/4;
                         vel = collision(vel, collide_vel, normal, inv_m, inv_m);
+                        //finalVel += collision(vel, collide_vel, normal, inv_m, inv_m);
                     }
                 }
             }
@@ -232,7 +328,7 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
         // Friction
         Vector3f F_f;
         // only apply friction when on the ground
-        if (approx(vel.y(), -0.0887) && approx(pos.y(), -WIDTH)) {
+        if (approx(vel.y(), -0.0887) && approx(pos.y(), BOTTOM)) {
             // calculate direction of friction
             float f_normal = m * g.abs();
             Vector3f F_dir = Vector3f(vel.xz().x(), 0.0, vel.xz().y());
@@ -246,7 +342,7 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
         }
 
         // F_collisions
-        Vector3f F_c;
+        Vector3f F_c = Vector3f(0,0,0);
         for (int c=0; c<(state.size()/2); ++c) {
             if (c != i) {
                 Vector3f collide_pos = state[2*c];
@@ -261,7 +357,7 @@ std::vector<Vector3f> RigidSystem::evalF(std::vector<Vector3f> state)
                         std::cerr << "divide by zero" << std::endl;
                     } else {
                         //F_c = collision_vect.normalized() * 50;
-                        F_c = collision_vect.normalized()*10/dist;
+                        F_c += collision_vect.normalized()*10/dist;
                     }
                 }
             }

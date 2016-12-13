@@ -273,6 +273,7 @@ void drawSystem()
 
     // set uniforms for floor
     gl.updateMaterial(FLOOR_COLOR);
+
     gl.updateModelMatrix(Matrix4f::translation(0, -1.2f, 0));
     // draw floor
     drawQuad(2.4f);
