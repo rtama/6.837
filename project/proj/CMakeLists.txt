@@ -51,12 +51,8 @@ list (APPEND A3_SRC
   src/starter3_util.cpp
   src/camera.cpp
   src/vertexrecorder.cpp
-  src/clothsystem.cpp
   src/timestepper.cpp
   src/particlesystem.cpp
-  src/pendulumsystem.cpp
-  src/simplesystem.cpp
-  src/spring.cpp
   src/rigidsystem.cpp
   src/particle.cpp
 )
@@ -65,12 +61,8 @@ list (APPEND A3_HEADER
   src/starter3_util.h
   src/camera.h
   src/vertexrecorder.h
-  src/clothsystem.h
   src/timestepper.h
   src/particlesystem.h
-  src/pendulumsystem.h
-  src/simplesystem.h
-  src/spring.h
   src/rigidsystem.h
   src/particle.h
 )

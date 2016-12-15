@@ -4,7 +4,6 @@
 #include <vector>
 #include <vecmath.h>
 #include <cstdint>
-#include "spring.h"
 #include "particle.h"
 
 
@@ -32,8 +31,6 @@ public:
  protected:
     std::vector<Vector3f> m_vVecState;
 
-    // springs[i] = Spring object for particle i
-    std::vector<Spring> springs;
 
 };
 

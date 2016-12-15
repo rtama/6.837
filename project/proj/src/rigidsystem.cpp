@@ -6,7 +6,6 @@
 #include <math.h>
 #include "camera.h"
 #include "vertexrecorder.h"
-#include "spring.h"
 
 #include <iostream>
 #include <string>
